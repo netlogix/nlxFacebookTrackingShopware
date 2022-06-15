@@ -1,0 +1,99 @@
+stages:
+  - lint
+  - build
+  - test
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG$PHP_VERSION$SHOPWARE_VERSION"
+  paths:
+    - bin/.phpunit
+    - vendor/
+    - vendor-bin/
+    - .env
+  policy: pull
+
+check_structure:
+  stage: lint
+  image: alpine:latest
+  script:
+    - ./etc/scripts/checkForCorrectPluginStructure.sh
+
+composer:
+  stage: build
+  image: solutiondrive/php-composer:${PHP_VERSION}
+  script:
+    - ./etc/scripts/prepareComposerJson.sh
+    - composer install -n --no-progress --no-suggest
+  cache:
+    key: "$CI_COMMIT_REF_SLUG$PHP_VERSION$SHOPWARE_VERSION"
+    paths:
+      - bin/.phpunit
+      - vendor/
+      - vendor-bin/
+      - .env
+    policy: pull-push
+  tags:
+    - memory_hungry
+  parallel:
+    matrix:
+      - SHOPWARE_VERSION: "\\~5.6.10"
+        PHP_VERSION:
+          - "php7.2"
+          - "php7.3"
+      - SHOPWARE_VERSION: "\\~5.7.3"
+        PHP_VERSION:
+          - "php7.4"
+
+composer2:
+  stage: build
+  image: solutiondrive/php-composer2:${PHP_VERSION}
+  script:
+    - ./etc/scripts/prepareComposerJson.sh
+    - composer install -n --no-progress --no-suggest
+  cache:
+    key: "$CI_COMMIT_REF_SLUG$PHP_VERSION$SHOPWARE_VERSION_composer2"
+    paths:
+      - bin/.phpunit
+      - vendor/
+      - vendor-bin/
+      - .env
+    policy: pull-push
+  tags:
+    - memory_hungry
+  allow_failure: true
+  parallel:
+    matrix:
+      - SHOPWARE_VERSION: "\\~5.7.5"
+        PHP_VERSION:
+          - "php7.4"
+          - "php8.0"
+
+phpspec:
+  stage: test
+  needs:
+    - composer
+  image: solutiondrive/php:${PHP_VERSION}
+  script:
+    - vendor/bin/phpspec-standalone.${PHP_VERSION}.phar run --no-code-generation --format=dot
+  parallel:
+    matrix:
+      - SHOPWARE_VERSION: "\\~5.6.10"
+        PHP_VERSION:
+          - "php7.2"
+          - "php7.3"
+      - SHOPWARE_VERSION: "\\~5.7.3"
+        PHP_VERSION:
+          - "php7.4"
+
+codingstandards:
+  stage: test
+  needs:
+    - composer
+  image: solutiondrive/php-composer:${PHP_VERSION}
+  script:
+    - ./etc/scripts/checkCodingStandards.sh
+  parallel:
+    matrix:
+      - SHOPWARE_VERSION: "\\~5.7.3"
+        PHP_VERSION:
+          - "php7.4"

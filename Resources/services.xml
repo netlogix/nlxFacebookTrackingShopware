@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="nlx_facebook_tracking.service.config" class="nlxFacebookTrackingShopware\Services\Config">
+            <argument type="service" id="shopware.plugin.cached_config_reader"/>
+        </service>
+
+        <service id="nlx_facebook_tracking.service.tracking_consent" class="nlxFacebookTrackingShopware\Services\TrackingConsentService">
+            <argument type="service" id="Shopware\Bundle\CookieBundle\Services\CookieHandler"/>
+        </service>
+
+        <service id="nlx_facebook_tracking.subscriber.template" class="nlxFacebookTrackingShopware\Subscriber\TemplateRegistrationSubscriber">
+            <argument type="string">%nlx_facebook_tracking_shopware.plugin_dir%</argument>
+            <argument type="service" id="template"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+
+        <service id="nlx_facebook_tracking.subscriber.list_price_conversion" class="nlxFacebookTrackingShopware\Subscriber\ListPriceConversionSubscriber">
+            <tag name="shopware.event_subscriber"/>
+        </service>
+
+        <service id="nlx_facebook_tracking.subscriber.frontend" class="nlxFacebookTrackingShopware\Subscriber\FrontendSubscriber">
+            <argument type="service" id="nlx_facebook_tracking.service.config"/>
+            <argument type="service" id="shopware_storefront.context_service"/>
+            <argument type="service" id="nlx_facebook_tracking.service.tracking_consent"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+
+        <service id="nlx_facebook_tracking.subscriber.cookie_collection" class="nlxFacebookTrackingShopware\Subscriber\CookieCollectionSubscriber">
+            <argument type="service" id="nlx_facebook_tracking.service.config"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../engine/Shopware/Components/Plugin/schema/config.xsd">
+    <elements>
+        <element type="text" required="true" scope="shop">
+            <name>nlxFacebookTrackingPixelId</name>
+            <label lang="de">Facebook-Pixel-ID</label>
+            <label lang="en">Facebook-Pixel-ID</label>
+            <value></value>
+        </element>
+
+        <element type="boolean" required="true">
+            <name>nlxFacebookTrackingPixelUseCookieConsentManager</name>
+            <label lang="de">Shopware Cookie Consent Manager verwenden</label>
+            <label lang="en">Use Shopware cookie consent manager</label>
+            <value>false</value>
+        </element>
+    </elements>
+</config>

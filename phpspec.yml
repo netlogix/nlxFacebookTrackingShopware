@@ -1,0 +1,6 @@
+suites:
+  default:
+    namespace: nlxFacebookTrackingShopware
+    psr4_prefix: nlxFacebookTrackingShopware
+    spec_path: ./
+    src_path: ./
